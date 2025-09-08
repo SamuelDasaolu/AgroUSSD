@@ -1,2 +1,4 @@
 src/
 .idea/
+.venv/
+__pycache__/
