@@ -1,0 +1,23 @@
+{
+    "farmers": [
+        {
+            "user_id": "F001",
+            "name": "Adamu",
+            "phone_number": "+456546",
+            "pin": "1234",
+            "product": {
+                "Tomatoes": 20,
+                "Corn": 200
+            },
+            "market_id": ""
+        }
+    ],
+    "buyers": [
+        {
+            "user_id": "B001",
+            "name": "Kemi",
+            "phone_number": "+32443545",
+            "pin": "5678"
+        }
+    ]
+}
