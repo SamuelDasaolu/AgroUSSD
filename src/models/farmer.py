@@ -4,15 +4,22 @@ from src.utils import data_handler as dh
 
 # Farmer Class
 class Farmer(User):
-    role = "farmers"
+    role_key = "farmers"
+    id_prefix = "F"
 
     def __init__(self, name, phone_number, pin):
         super().__init__(name, phone_number, pin)
+
+    def _extend_user_record(self, record: dict):
+        # ensure product is a dict mapping product_name -> quantity # TO be changed Later
+        record.setdefault("product", {})
+        record.setdefault("market_id", "")
 
     def add_produce(self, product_name, quantity):
         data = dh.load_user_data()
         for farmer in data['farmers']:
             if farmer['user_id'] == self.user_id:
+                farmer.setdefault('product', {})
                 farmer['product'][product_name] = farmer['product'].get(product_name, 0) + quantity
                 dh.save_user_data(data)
                 print(f"Added {quantity} units of {product_name}.")
@@ -25,8 +32,8 @@ class Farmer(User):
         data = dh.load_user_data()
         for farmer in data["farmers"]:
             if farmer["user_id"] == self.user_id:
-                print(f"{self.name}'s produce: {farmer['product']}")
-                return farmer["product"]
+                print(f"{self.name}'s produce: {farmer.get('product', {})}")
+                return farmer.get("product", {})
         return {}
 
     def view_orders(self):

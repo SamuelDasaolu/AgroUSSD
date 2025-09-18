@@ -6,11 +6,16 @@ from src.utils import data_handler as dh
 
 # Buyer Class
 class Buyer(User):
-    role = "buyers"
+    role_key = "buyers"
+    id_prefix = "B"
 
     def __init__(self, name, phone_number, password):
         super().__init__(name, phone_number, password)
         self.orders = []
+
+    def _extend_user_record(self, record: dict):
+        # buyers currently have no extra fields; hook present for future extension
+        pass
 
     def place_order(self, farmer_id, product_name, quantity):
         """Deduct stock from farmer when buyer places an order"""
@@ -40,6 +45,7 @@ class Buyer(User):
                     "quantity": quantity,
                     "timestamp": datetime.now().isoformat()
                 }
+                orders_data.setdefault("orders", [])
                 orders_data["orders"].append(new_order)
                 dh.save_order_data(orders_data)
                 print(f"Order placed: {quantity} units of {product_name} from Farmer {farmer['name']}.")

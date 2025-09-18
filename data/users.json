@@ -9,6 +9,34 @@
                 "Corn": 180
             },
             "market_id": ""
+        },
+        {
+            "user_id": "F002",
+            "name": "Adamu",
+            "phone_number": "08012345678",
+            "pin": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+            "product": {
+                "Tomatoes": 160
+            },
+            "market_id": ""
+        },
+        {
+            "user_id": "F003",
+            "name": "Test Farmer",
+            "phone_number": "08135167779",
+            "pin": "38083c7ee9121e17401883566a148aa5c2e2d55dc53bc4a94a026517dbff3c6b",
+            "product": {
+                "Potatoes": 2334
+            },
+            "market_id": ""
+        },
+        {
+            "user_id": "F004",
+            "name": "Test Farmer 2",
+            "phone_number": "08145962953",
+            "pin": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+            "product": {},
+            "market_id": ""
         }
     ],
     "buyers": [
@@ -23,6 +51,12 @@
             "name": "Samuel",
             "phone_number": "+7233243",
             "pin": "5678"
+        },
+        {
+            "user_id": "B003",
+            "name": "Kemi",
+            "phone_number": "08098765432",
+            "pin": "f8638b979b2f4f793ddb6dbd197e0ee25a7a6ea32b0ae22f5e3c5d119d839e75"
         }
     ]
 }
