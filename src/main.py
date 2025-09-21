@@ -28,7 +28,7 @@ def main():
     if session.role == "farmer":
         current_menu = farmer_menu(session.active_user)
     else:
-        current_menu = buyer_menu()
+        current_menu = buyer_menu(session.active_user)
 
     while True:
         print("\n" + current_menu.display())

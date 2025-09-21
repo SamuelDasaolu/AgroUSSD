@@ -1,28 +1,52 @@
+# src/interfaces/farmer_menu.py
 from src.interfaces.ussd_menu import USSDMenu
-from src.models.farmer import Farmer
+from src.utils.validators import is_positive_int
 
-def add_produce(farmer: Farmer):
-    crop = input("Enter crop name: ")
-    qty = int(input("Enter quantity: "))
-    if farmer.add_produce(crop, qty): print(f"{qty} units of {crop} added successfully!")
+def _add_produce_action(farmer):
+    def inner():
+        crop = input("Enter crop name: ").strip()
+        qty = input("Enter quantity: ").strip()
+        if not is_positive_int(qty):
+            print("Invalid quantity. Must be a positive integer.")
+            return None
+        success = farmer.add_produce(crop, int(qty))
+        if success:
+            print(f"Added {qty} units of {crop} to your inventory.")
+        else:
+            print("Failed to add produce. Make sure you're registered and try again.")
+        return None
+    return inner
 
+def _view_produce_action(farmer):
+    def inner():
+        prod = farmer.view_produce()
+        if not prod:
+            print("No produce recorded yet.")
+            return None
+        print(f"Produce for {farmer.name}:")
+        for k, v in prod.items():
+            print(f"- {k}: {v} units")
+        return None
+    return inner
 
-def view_produce(farmer: Farmer):
-    produce = farmer.view_produce()  # fetch from DB
-    if not produce:
-        print("No produce registered yet.")
-        return
+def _view_orders_action(farmer):
+    def inner():
+        orders = farmer.list_my_orders()
+        if not orders:
+            print("No orders for your farm yet.")
+            return None
+        print("Orders:")
+        for o in orders:
+            print(f"- {o['quantity']} {o['product']} for Buyer {o['buyer_id']} on {o['timestamp']}")
+        return None
+    return inner
 
-    print(f"\n{farmer.name}'s Produce:")
-    for crop, qty in produce.items():
-        print(f"- {crop}: {qty} units")
-
-
-def farmer_menu(farmer: Farmer):
+def farmer_menu(farmer):
     return USSDMenu(
-        "Farmer Menu",
+        f"Farmer Menu - {farmer.name}",
         {
-            "1": ("Add Produce", lambda: add_produce(farmer)),
-            "2": ("View Produce", lambda: view_produce(farmer)),
+            "1": ("Add Produce", _add_produce_action(farmer)),
+            "2": ("View Produce", _view_produce_action(farmer)),
+            "3": ("View Orders", _view_orders_action(farmer)),
         }
     )

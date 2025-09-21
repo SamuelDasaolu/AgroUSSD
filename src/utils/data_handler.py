@@ -1,44 +1,50 @@
 from pathlib import Path
-import json
+import json, tempfile
 
-ROOT_DIR = Path(__file__).resolve().parent.parent.parent
-USERS_FILE = ROOT_DIR / 'data' / 'users.json'
-ORDERS_FILE = ROOT_DIR / "data" / "orders.json"
+ROOT = Path(__file__).resolve().parent.parent.parent
+USERS_FILE = ROOT / 'data' / 'users.json'
+ORDERS_FILE = ROOT / 'data' / 'orders.json'
 
+def _safe_write(path: Path, obj):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    # write to named temp file then replace atomically
+    with tempfile.NamedTemporaryFile('w', delete=False, dir=str(path.parent), encoding='utf-8') as tf:
+        json.dump(obj, tf, ensure_ascii=False, indent=2)
+        tempname = Path(tf.name)
+    tempname.replace(path)
 
 def load_user_data():
     if not USERS_FILE.exists():
-        return {"farmers": [], "buyers": []}
-    with open(USERS_FILE, "r", encoding='utf-8') as f:
+        return {'farmers': [], 'buyers': []}
+    with USERS_FILE.open('r', encoding='utf-8') as f:
         data = json.load(f)
-        # Ensure both keys always exist
-        if "farmers" not in data:
-            data["farmers"] = []
-        if "buyers" not in data:
-            data["buyers"] = []
+    # ensure keys
+    data.setdefault('farmers', [])
+    data.setdefault('buyers', [])
+    return data
 
-        return data
-
-
-def save_user_data(data: dict):
-    existing_data = load_user_data()
-    existing_data.update(data)
-    with open(USERS_FILE, "w", encoding='utf-8') as f:
-        json.dump(existing_data, f, indent=4)
-
+def save_user_data(data):
+    # Merge top-level keys conservatively
+    existing = load_user_data()
+    existing.update(data)
+    _safe_write(USERS_FILE, existing)
 
 def load_order_data():
     if not ORDERS_FILE.exists():
-        return {"orders": []}
-    with open(ORDERS_FILE, "r", encoding='utf-8') as f:
+        return {'orders': []}
+    with ORDERS_FILE.open('r', encoding='utf-8') as f:
         data = json.load(f)
-    if "orders" not in data:
-        data["orders"] = []
+    data.setdefault('orders', [])
     return data
 
-
 def save_order_data(data):
-    existing_data = load_order_data()
-    existing_data.update(data)
-    with open(ORDERS_FILE, "w", encoding='utf-8') as f:
-        json.dump(existing_data, f, indent=4)
+    existing = load_order_data()
+    existing.update(data)
+    _safe_write(ORDERS_FILE, existing)
+
+# compatibility wrappers
+def load_orders():
+    return load_order_data()
+
+def save_orders(data):
+    return save_order_data(data)
