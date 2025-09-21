@@ -6,9 +6,9 @@ def hash_pin(pin: str, salt: bytes = None, iterations: int = 200_000) -> Dict[st
         salt = os.urandom(16)
     key = hashlib.pbkdf2_hmac('sha256', pin.encode('utf-8'), salt, iterations)
     return {
-        "salt": base64.b64encode(salt).decode('ascii'),
-        "hash": base64.b64encode(key).decode('ascii'),
-        "iterations": iterations
+        'salt': base64.b64encode(salt).decode('ascii'),
+        'hash': base64.b64encode(key).decode('ascii'),
+        'iterations': iterations
     }
 
 def verify_pin(stored: Dict[str, Any], candidate_pin: str) -> bool:

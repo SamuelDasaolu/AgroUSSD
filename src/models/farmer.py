@@ -1,53 +1,50 @@
 from src.models.user import User
 from src.utils import data_handler as dh
 
-
-# Farmer Class
 class Farmer(User):
-    role_key = "farmers"
-    id_prefix = "F"
+    role_key = 'farmers'
+    id_prefix = 'F'
 
-    def __init__(self, name, phone_number, pin):
+    def __init__(self, name: str, phone_number: str, pin: str):
         super().__init__(name, phone_number, pin)
 
     def _extend_user_record(self, record: dict):
-        # ensure product is a dict mapping product_name -> quantity # TO be changed Later
-        record.setdefault("product", {})
-        record.setdefault("market_id", "")
+        record.setdefault('product', {})  # product_name -> qty
 
-    def add_produce(self, product_name, quantity):
+    def add_produce(self, product_name: str, quantity: int) -> bool:
         data = dh.load_user_data()
-        for farmer in data['farmers']:
-            if farmer['user_id'] == self.user_id:
-                farmer.setdefault('product', {})
-                farmer['product'][product_name] = farmer['product'].get(product_name, 0) + quantity
+        # find farmer by user_id if exists, else use temp user before register
+        if not self.user_id:
+            # try to find by phone
+            for f in data.get('farmers', []):
+                if f.get('phone_number') == self.phone_number:
+                    self.user_id = f.get('user_id')
+                    break
+
+        # If farmer not registered, cannot add produce
+        if not self.user_id:
+            # allow adding to in-memory record then require register to persist
+            # but for simplicity, require registration first
+            return False
+
+        for f in data.get('farmers', []):
+            if f.get('user_id') == self.user_id:
+                prod = f.setdefault('product', {})
+                prod[product_name] = prod.get(product_name, 0) + int(quantity)
                 dh.save_user_data(data)
-                print(f"Added {quantity} units of {product_name}.")
-                print(f"Current Stock:  {farmer['product'][product_name]} units.")
                 return True
-        print("Farmer doesn't exist in our database")
         return False
 
     def view_produce(self):
         data = dh.load_user_data()
-        for farmer in data["farmers"]:
-            if farmer["user_id"] == self.user_id:
-                print(f"{self.name}'s produce: {farmer.get('product', {})}")
-                return farmer.get("product", {})
+        for f in data.get('farmers', []):
+            if f.get('phone_number') == self.phone_number or f.get('user_id') == self.user_id:
+                return f.get('product', {})
         return {}
 
-    def view_orders(self):
-        orders_data = dh.load_order_data()
-        my_orders = [order for order in orders_data.get('orders', []) if order["farmer_id"] == self.user_id]
-
-        if not my_orders:
-            print(f"No orders found for Farmer {self.name}.")
-            return []
-
-        print(f"Orders for Farmer {self.name}:")
-        for o in my_orders:
-            print(f"- {o['quantity']} {o['product']} ordered by Buyer {o['buyer_id']} on {o['timestamp']}")
-        return my_orders
+    def list_my_orders(self):
+        orders = dh.load_order_data()
+        return [o for o in orders.get('orders', []) if o.get('farmer_id') == self.user_id]
 
     def role_action(self):
-        print(f"Farmer {self.name} can add and view produce.")
+        print(f"Farmer {self.name} can list and manage produce.")

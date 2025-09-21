@@ -1,62 +1,44 @@
 {
-    "farmers": [
-        {
-            "user_id": "F001",
-            "name": "Adamu",
-            "phone_number": "+456546",
-            "pin": "1234",
-            "product": {
-                "Corn": 180
-            },
-            "market_id": ""
-        },
-        {
-            "user_id": "F002",
-            "name": "Adamu",
-            "phone_number": "08012345678",
-            "pin": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
-            "product": {
-                "Tomatoes": 160
-            },
-            "market_id": ""
-        },
-        {
-            "user_id": "F003",
-            "name": "Test Farmer",
-            "phone_number": "08135167779",
-            "pin": "38083c7ee9121e17401883566a148aa5c2e2d55dc53bc4a94a026517dbff3c6b",
-            "product": {
-                "Potatoes": 2334
-            },
-            "market_id": ""
-        },
-        {
-            "user_id": "F004",
-            "name": "Test Farmer 2",
-            "phone_number": "08145962953",
-            "pin": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
-            "product": {},
-            "market_id": ""
-        }
-    ],
-    "buyers": [
-        {
-            "user_id": "B001",
-            "name": "Kemi",
-            "phone_number": "+32443545",
-            "pin": "5678"
-        },
-        {
-            "user_id": "B002",
-            "name": "Samuel",
-            "phone_number": "+7233243",
-            "pin": "5678"
-        },
-        {
-            "user_id": "B003",
-            "name": "Kemi",
-            "phone_number": "08098765432",
-            "pin": "f8638b979b2f4f793ddb6dbd197e0ee25a7a6ea32b0ae22f5e3c5d119d839e75"
-        }
-    ]
+  "farmers": [
+    {
+      "user_id": "F001",
+      "name": "test farmer 1",
+      "phone_number": "08135167779",
+      "pin_meta": {
+        "salt": "8AAipwS6CpWCCz7B3r/7NQ==",
+        "hash": "nR267CkUsdgQHWWBkcUY/qXZQMTWgx6jc8hkyF5nL9Q=",
+        "iterations": 200000
+      },
+      "product": {
+        "testproduct1": 1322
+      },
+      "market_id": ""
+    },
+    {
+      "user_id": "F002",
+      "name": "test farmer 2",
+      "phone_number": "08145962853",
+      "pin_meta": {
+        "salt": "cnm3UNQMKP+BNIEAl2LSig==",
+        "hash": "jcyFxxfla7/aZ1O9qqKcufDdjSiAiy/dPURXFJnXbUE=",
+        "iterations": 200000
+      },
+      "product": {
+        "testproduct2": 1312
+      },
+      "market_id": ""
+    }
+  ],
+  "buyers": [
+    {
+      "user_id": "B001",
+      "name": "testbuyer1",
+      "phone_number": "08145962853",
+      "pin_meta": {
+        "salt": "+l+6vslFbuIdx93pfP6oOA==",
+        "hash": "UNZ472jGNFw0sMmYnToMXICvAkhKFc6+ptA1J8AiEag=",
+        "iterations": 200000
+      }
+    }
+  ]
 }
