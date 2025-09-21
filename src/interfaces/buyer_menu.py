@@ -1,4 +1,3 @@
-# src/interfaces/buyer_menu.py
 from src.interfaces.ussd_menu import USSDMenu
 from src.utils import data_handler as dh
 from src.utils.validators import is_positive_int

@@ -1,4 +1,3 @@
-# src/interfaces/farmer_menu.py
 from src.interfaces.ussd_menu import USSDMenu
 from src.utils.validators import is_positive_int
 

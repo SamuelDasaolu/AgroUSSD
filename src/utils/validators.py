@@ -1,4 +1,3 @@
-# src/utils/validators.py
 import re
 
 def is_valid_phone(value: str) -> bool:
