@@ -6,9 +6,9 @@ Represents the customer interacting with the USSD system.
 Stores user-specific data such as phone number, session state, and selected inputs.
 
 Acts as the "actor" that initiates and responds to USSD requests."""
-import hashlib
 from abc import ABC, abstractmethod
 from src.utils import data_handler as dh
+from src.utils.security import hash_pin, verify_pin
 
 # data/users.json SKELETON
 users = {
@@ -51,9 +51,6 @@ orders = {
 
 
 # --- Helpers ---
-def _hash_pin(pin: str) -> str:
-    return hashlib.sha256(pin.encode()).hexdigest()
-
 
 class User(ABC):
     role_key = None  # must be overridden by subclasses
@@ -63,7 +60,7 @@ class User(ABC):
         self.user_id = None  # generated automatically during registration
         self.name = name
         self.phone_number = phone_number
-        self.__pin = _hash_pin(pin)  # store hashed pin only
+        self.__pin = pin  # store raw pin until registration
         self.is_authenticated = False
 
     def register(self):
@@ -71,28 +68,31 @@ class User(ABC):
         users_data = dh.load_user_data()
         # Guard: subclass must define role_key and id_prefix
         if not self.role_key or not self.id_prefix:
-            return {"success": False, "message": "User subclass must define role_key and id_prefix."}
+            return False
 
         # Check DB if user already exists
         for user in users_data[self.role_key]:
             if user["phone_number"] == self.phone_number:
-                return {"success": False, "message": "Phone number already registered."}
+                return False
 
         # Generate unique ID (F### or B###)
         next_id = len(users_data[self.role_key]) + 1
         self.user_id = f"{self.id_prefix}{str(next_id).zfill(3)}"
+        # Hash the pin for secure storage
+        pin_meta = hash_pin(self.__pin)
+
 
         # Safety: avoid accidental duplicate user_id
         existing_ids = {u.get("user_id") for u in users_data.get(self.role_key, [])}
         if self.user_id in existing_ids:
-            return {"success": False, "message": "Duplicate user ID detected."}
+            return False
 
         # user record for db
         user_record = {
             "user_id": self.user_id,
             "name": self.name,
             "phone_number": self.phone_number,
-            "pin": self.__pin
+            "pin_meta": pin_meta
         }
         #
         # # Add farmer-specific fields
@@ -106,30 +106,32 @@ class User(ABC):
         users_data[self.role_key].append(user_record)
         dh.save_user_data(users_data)
         message = f"{self.__class__.__name__} '{self.name}' registered successfully with ID {self.user_id}."
-        return {"success": True, "message": message}
+        self.last_message = message
+        return True
 
     def authenticate(self, pin):
         if not self.role_key:
-            return {"success": False, "message": "User subclass must define role_key."}
+            return False
 
         users_data = dh.load_user_data()
-        hashed_pin = _hash_pin(pin)
         role_key = self.role_key
 
         # Find user in db by phone_number
         for user in users_data.get(role_key, []):
-            if user["phone_number"] == self.phone_number and user["pin"] == hashed_pin:
-                # Sync object attributes from DB
-                self.user_id = user["user_id"]
-                self.name = user["name"]
-                self.phone_number = user["phone_number"]
-                self.__pin = user["pin"]
+            if user.get("phone_number") == self.phone_number:
+                # verify pin metadata
+                pin_meta = user.get("pin_meta")
+                if pin_meta and verify_pin(pin_meta, pin):
+                    # Sync object attributes from DB
+                    self.user_id = user.get("user_id")
+                    self.name = user.get("name")
+                    self.is_authenticated = True
+                    return True
+                else:
+                    return False
+        return False
 
-                self.is_authenticated = True
-                message = f"{self.__class__.__name__} {self.name} authenticated successfully. User ID: {self.user_id}"
-                return {'success': True, 'message': message}
 
-        return {"success": False, "message": "Authentication failed. Wrong phone number or PIN."}
 
     def logout(self):
         self.is_authenticated = False
@@ -144,3 +146,13 @@ class User(ABC):
     def role_action(self):
         """Each role (Farmer/Buyer) will define its own actions"""
         pass
+
+
+# Re-export common concrete classes for convenience (tests expect these names here)
+try:
+    from src.models.farmer import Farmer
+    from src.models.buyer import Buyer
+except Exception:
+    # import errors during test collection should not crash module import
+    Farmer = None
+    Buyer = None

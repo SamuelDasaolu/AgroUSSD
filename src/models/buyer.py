@@ -24,10 +24,10 @@ class Buyer(User):
             if farmer["user_id"] == farmer_id:
                 if product_name not in farmer["product"]:
                     print("Product not available.")
-                    return False
+                    return Falselse
                 if farmer["product"][product_name] < quantity:
                     print("Not enough stock available.")
-                    return False
+                    return Falselse
 
                 # Deduct stock
                 farmer["product"][product_name] -= quantity
@@ -49,9 +49,9 @@ class Buyer(User):
                 orders_data["orders"].append(new_order)
                 dh.save_order_data(orders_data)
                 print(f"Order placed: {quantity} units of {product_name} from Farmer {farmer['name']}.")
-                return True
+                return new_order
         print("Farmer not found.")
-        return False
+        return Falselse
 
     def view_orders(self):
         orders_data = dh.load_order_data()

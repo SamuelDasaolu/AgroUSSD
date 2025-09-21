@@ -24,5 +24,3 @@ class USSDMenu:
         else:
             print("Invalid choice, try again.")
             return self
-
-
