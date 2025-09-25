@@ -7,6 +7,7 @@ def main():
     session = SessionManager()
 
     # === Registration / Login ===
+    print("*123#")
     print("Welcome to AgroUSSD")
     role_choice = input("Select role:\n1. Farmer\n2. Buyer\nChoice: ")
     role = "farmer" if role_choice == "1" else "buyer"
@@ -36,7 +37,7 @@ def main():
         next_menu = current_menu.handle_input(choice)
         if next_menu is None:
             break
-        current_menu = next_menu
+        current_menu = next_menu()
 
 if __name__ == "__main__":
     main()

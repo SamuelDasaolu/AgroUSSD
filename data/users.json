@@ -27,6 +27,17 @@
         "testproduct2": 1312
       },
       "market_id": ""
+    },
+    {
+      "user_id": "F003",
+      "name": "test farmer 5",
+      "phone_number": "08135167778",
+      "pin_meta": {
+        "salt": "qLOm7piVX+aujhxYXXpXhg==",
+        "hash": "DozdGcVZrEDzQPBpnPJKN1yjAhDADhuO7e9FyLf4ZRQ=",
+        "iterations": 200000
+      },
+      "product": {}
     }
   ],
   "buyers": [
